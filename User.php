@@ -1,7 +1,7 @@
 <?php
 include 'db.php';
 
-// User class that extends Database
+
 class User extends Database
 {
     private int $id;
@@ -10,7 +10,7 @@ class User extends Database
     public string $email;
     public string $firstname;
     public string $lastname;
-
+    public bool $IsConnected = false;
 
     public function __construct()
     {
@@ -56,6 +56,84 @@ class User extends Database
         if(!empty($_SESSION['id'])){
             echo htmlspecialchars($_SESSION['login']);
         }
+    }
+
+    public function disconnect()
+    {
+        session_abort();
+        session_destroy();
+        session_reset();
+
+        if($_SESSION == NULL){
+            echo "Session is now reset";
+        }
+    }
+
+    public function Delete($login)
+    {
+        $stmt = $this->db->prepare('DELETE FROM utilisateurs WHERE login = ?');
+      
+        $stmt->bind_param('s', $login);     
+        if ($stmt->execute()) {
+            echo "User Deleted Successfully" . "";
+        } else {
+            echo "Error: " . $stmt->error;
+        }   
+    }
+
+    public function Update($login, $password, $email, $firstname, $lastname)
+    {
+        $stmt = $this->db->prepare('UPDATE utilisateurs SET password = ?, email = ?, firstname = ?, lastname = ? WHERE login = ?');
+        $stmt->bind_param('sssss',$login, $password, $email, $firstname, $lastname);
+        if ($stmt->execute()) {
+            echo "User Deleted Successfully" . "";
+        } else {
+            echo "Error: " . $stmt->error;
+        }
+    }
+
+    
+    public function IsOnline()
+    {
+        if(isset($_SESSION['login'])){
+            $this->isconnected = true;
+            echo "User" . htmlspecialchars($login) . "is Connected";
+        } else {
+            $this->isConnected = false;
+            echo "Not Connected";
+        }
+    }
+
+    public function GetAllInfo()
+    {
+        $result = $this->db->query('SELECT * FROM utilisateurs');
+        while ($row = $result->fetch_assoc()) {
+            echo htmlspecialchars($row['id']) . ' ' .
+                 htmlspecialchars($row['login']) . ' ' .
+                 htmlspecialchars($row['email']) . ' ' .
+                 htmlspecialchars($row['firstname']) . ' ' .
+                 htmlspecialchars($row['lastname']) . '<br>';
+        }
+    }
+
+    public function Getlogin($login)
+    {
+        $this->login;
+    }
+
+    public function GetEmail($email)
+    {
+        $this->email;
+    }
+
+    public function GetFirstname($firstname)
+    {
+        $this->firstname;
+    }
+
+    public function Getlastname($lastname)
+    {
+        $this->lastname;
     }
 }
 
