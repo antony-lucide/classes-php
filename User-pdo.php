@@ -45,11 +45,11 @@ class Userpdo extends Database
         }
     }
 
-    public function signIn($login)
+    public function signIn($login,$password)
     {
        
-        $stmt = $this->pdo->prepare('SELECT * FROM utilisateurs WHERE login = ?');
-        $stmt->bind_param('s', $login);
+        $stmt = $this->pdo->prepare('SELECT * FROM utilisateurs WHERE login = ?, password = ?');
+        $stmt->bind_param('s', $login, password_verify($password));
         if($stmt->execute()){
             session_start();
             echo "Success";
@@ -91,7 +91,7 @@ class Userpdo extends Database
     {
         $stmt = $this->pdo->prepare('UPDATE utilisateurs SET password = ?, email = ?, firstname = ?, lastname = ? WHERE login = ?');
 
-        $stmt->execute([$password, $email, $firstname, $lastname, $login]);
+        $stmt->execute($password, $email, $firstname, $lastname, $login]);
 
         if ($stmt->rowCount() > 0) {
             echo "User updated successfully.";
