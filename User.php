@@ -48,13 +48,15 @@ class User extends Database
         }
     }
 
-    public function SignIn($login)
+    public function SignIn($login, $password)
     {
-        session_start();
 
-        $_SESSION['login'] = $login;
-        if(!empty($_SESSION['id'])){
-            echo htmlspecialchars($_SESSION['login']);
+        $stmt = $this->db->prepare('SELECT * FROM utilisateurs WHERE login = ?');
+        $stmt->bind_param('s', $login);
+        if($stmt->execute()){
+            session_start();
+            echo "Success";
+            IsOnline();
         }
     }
 
@@ -92,7 +94,7 @@ class User extends Database
         }
     }
 
-    
+
     public function IsOnline()
     {
         if(isset($_SESSION['login'])){
